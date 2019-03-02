@@ -106,7 +106,7 @@ def convert_model(model, nms=True, class_specific_filter=True, anchor_params=Non
 def assert_training_model(model):
     """ Assert that the model is a training model.
     """
-    assert(all(output in model.output_names for output in ['regression', 'classification'])), \
+    assert(all(output in model.output_names for output in ['regression', 'classification', 'depthsification'])), \
         "Input is not a training model (no 'regression' and 'classification' outputs were found, outputs are: {}).".format(model.output_names)
 
 
