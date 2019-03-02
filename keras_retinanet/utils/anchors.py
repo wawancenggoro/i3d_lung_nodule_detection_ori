@@ -130,7 +130,7 @@ def anchor_targets_bbox(
             regression_batch[index, indices, -1] = -1
             #ADDENDUM DEPTH
             depths_batch[index, indices, -1] = -1
-
+        import IPython;IPython.embed()
     return regression_batch, labels_batch, depths_batch
 
 
