@@ -373,5 +373,5 @@ class Generator(keras.utils.Sequence):
             inputs11, inputs12, inputs13, inputs14, inputs15, inputs16, inputs17, inputs18, inputs19, inputs20,
             inputs21, inputs22, inputs23, inputs24, inputs25, inputs26, inputs27, inputs28, inputs29, inputs30,
             inputs31, inputs32), axis=1)
-        targets = [targets[0], targets[2]]
+        targets = [targets[0], targets[1]]
         return inputsss, targets
