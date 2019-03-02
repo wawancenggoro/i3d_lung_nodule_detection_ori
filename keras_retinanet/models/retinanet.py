@@ -260,7 +260,7 @@ def default_submodels(num_classes, num_anchors):
     return [
         ('regression', default_regression_model(4, num_anchors)),
         ('classification', default_classification_model(num_classes, num_anchors)),
-        ('depthsification', default_classification_model(2, num_anchors))
+        ('depthsification', default_depths_model(2, num_anchors))
     ]
 
 
