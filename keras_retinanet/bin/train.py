@@ -601,7 +601,7 @@ def main(args=None):
             optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
         )
 
-    import IPython; IPython.embed()
+    # import IPython; IPython.embed()
 
 # def create_models(num_classes, weights, multi_gpu=0,
 #                   freeze_backbone=False, lr=1e-5, config=None):
