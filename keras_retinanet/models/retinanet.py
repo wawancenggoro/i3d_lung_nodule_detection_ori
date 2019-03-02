@@ -26,7 +26,7 @@ def default_depths_model(
     pyramid_feature_size=256,
     prior_probability=0.01,
     classification_feature_size=256,
-    name='classification_submodel'
+    name='depths_submodel'
 ):
     """ Creates the default regression submodel.
 
@@ -55,7 +55,7 @@ def default_depths_model(
         outputs = keras.layers.Conv3D(
             filters=classification_feature_size,
             activation='relu',
-            name='pyramid_classification_{}'.format(i),
+            name='pyramid_depths_{}'.format(i),
             kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
             bias_initializer='zeros',
             **options
@@ -65,18 +65,18 @@ def default_depths_model(
         filters=num_classes * num_anchors,
         kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
         bias_initializer=initializers.PriorProbability(probability=prior_probability),
-        name='pyramid_classification',
+        name='pyramid_depths',
         **options
     )(outputs)
 
     # reshape output and apply sigmoid
     if keras.backend.image_data_format() == 'channels_first':
-        outputs = keras.layers.Permute((2, 3, 1), name='pyramid_classification_permute')(outputs)
-    outputs = keras.layers.Reshape((-1, num_classes), name='pyramid_classification_reshape')(outputs)
-    outputs = keras.layers.Activation('sigmoid', name='pyramid_classification_sigmoid')(outputs)
+        outputs = keras.layers.Permute((2, 3, 1), name='pyramid_depths_permute')(outputs)
+    outputs = keras.layers.Reshape((-1, num_classes), name='pyramid_depths_reshape')(outputs)
+    outputs = keras.layers.Activation('sigmoid', name='pyramid_depths_sigmoid')(outputs)
 
 
-    print('Load retinanet.py default_classification_model.....................')
+    print('Load retinanet.py default_depths_model.....................')
     # print('Debug Model default_classification_model ')
     # import IPython;IPython.embed()
 

@@ -230,4 +230,6 @@ class CSVGenerator(Generator):
                 float(annot['z1']),
                 float(annot['z2']),
             ]]))
+            print('debug dimension of annotations')
+            import IPython; IPython.embed()
         return annotations
