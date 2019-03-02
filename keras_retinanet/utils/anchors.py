@@ -82,11 +82,15 @@ def anchor_targets_bbox(
     for annotations in annotations_group:
         assert('bboxes' in annotations), "Annotations should contain bboxes."
         assert('labels' in annotations), "Annotations should contain labels."
+        #ADDENDUM DEPTH
+        assert('depths' in annotations), "Annotations should contain depths z1, z2."
 
     batch_size = len(image_group)
 
     regression_batch  = np.zeros((batch_size, anchors.shape[0], 4 + 1), dtype=keras.backend.floatx())
     labels_batch      = np.zeros((batch_size, anchors.shape[0], num_classes + 1), dtype=keras.backend.floatx())
+    #ADDENDUM DEPTH
+    depths_batch      = np.zeros((batch_size, anchors.shape[0], 2 + 1), dtype=keras.backend.floatx())
 
     # compute labels and regression targets
     for index, (image, annotations) in enumerate(zip(image_group, annotations_group)):
@@ -100,8 +104,14 @@ def anchor_targets_bbox(
             regression_batch[index, ignore_indices, -1]   = -1
             regression_batch[index, positive_indices, -1] = 1
 
+            #ADDENDUM DEPTH
+            depths_batch[index, ignore_indices, -1]       = -1
+            depths_batch[index, positive_indices, -1]     = 1            
+
             # compute target class labels
             labels_batch[index, positive_indices, annotations['labels'][argmax_overlaps_inds[positive_indices]].astype(int)] = 1
+
+            depths_batch[index] = (annotations['depths']-1.)/31.
 
             regression_batch[index, :, :-1] = bbox_transform(anchors, annotations['bboxes'][argmax_overlaps_inds, :])
 
@@ -112,8 +122,10 @@ def anchor_targets_bbox(
 
             labels_batch[index, indices, -1]     = -1
             regression_batch[index, indices, -1] = -1
+            #ADDENDUM DEPTH
+            depths_batch[index, ignore_indices, -1] = -1
 
-    return regression_batch, labels_batch
+    return regression_batch, labels_batch, depths_batch
 
 
 def compute_gt_annotations(

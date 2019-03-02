@@ -20,6 +20,67 @@ from .. import layers
 from ..utils.anchors import AnchorParameters
 from . import assert_training_model
 
+def default_depths_model(
+    num_classes,
+    num_anchors,
+    pyramid_feature_size=256,
+    prior_probability=0.01,
+    classification_feature_size=256,
+    name='classification_submodel'
+):
+    """ Creates the default regression submodel.
+
+    Args
+        num_classes                 : Number of classes to predict a score for at each feature level.
+        num_anchors                 : Number of anchors to predict classification scores for at each feature level.
+        pyramid_feature_size        : The number of filters to expect from the feature pyramid levels.
+        classification_feature_size : The number of filters to use in the layers in the classification submodel.
+        name                        : The name of the submodel.
+
+    Returns
+        A keras.models.Model that predicts classes for each anchor.
+    """
+    options = {
+        'kernel_size' : 3,
+        'strides'     : 1,
+        'padding'     : 'same',
+    }
+
+    if keras.backend.image_data_format() == 'channels_first':
+        inputs  = keras.layers.Input(shape=(pyramid_feature_size, None, None, None))
+    else:
+        inputs  = keras.layers.Input(shape=(None, None, None, pyramid_feature_size))
+    outputs = inputs
+    for i in range(4):
+        outputs = keras.layers.Conv3D(
+            filters=classification_feature_size,
+            activation='relu',
+            name='pyramid_classification_{}'.format(i),
+            kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
+            bias_initializer='zeros',
+            **options
+        )(outputs)
+
+    outputs = keras.layers.Conv3D(
+        filters=num_classes * num_anchors,
+        kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
+        bias_initializer=initializers.PriorProbability(probability=prior_probability),
+        name='pyramid_classification',
+        **options
+    )(outputs)
+
+    # reshape output and apply sigmoid
+    if keras.backend.image_data_format() == 'channels_first':
+        outputs = keras.layers.Permute((2, 3, 1), name='pyramid_classification_permute')(outputs)
+    outputs = keras.layers.Reshape((-1, num_classes), name='pyramid_classification_reshape')(outputs)
+    outputs = keras.layers.Activation('sigmoid', name='pyramid_classification_sigmoid')(outputs)
+
+
+    print('Load retinanet.py default_classification_model.....................')
+    # print('Debug Model default_classification_model ')
+    # import IPython;IPython.embed()
+
+    return keras.models.Model(inputs=inputs, outputs=outputs, name=name)
 
 def default_classification_model(
     num_classes,
@@ -198,7 +259,8 @@ def default_submodels(num_classes, num_anchors):
     """
     return [
         ('regression', default_regression_model(4, num_anchors)),
-        ('classification', default_classification_model(num_classes, num_anchors))
+        ('classification', default_classification_model(num_classes, num_anchors)),
+        ('depths' default_depths_model(2, num_anchors))
     ]
 
 

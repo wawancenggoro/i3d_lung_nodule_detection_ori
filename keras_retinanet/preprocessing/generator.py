@@ -144,8 +144,10 @@ class Generator(keras.utils.Sequence):
         annotations_group = [self.load_annotations(image_index) for image_index in group]
         for annotations in annotations_group:
             assert(isinstance(annotations, dict)), '\'load_annotations\' should return a list of dictionaries, received: {}'.format(type(annotations))
-            assert('labels' in annotations), '\'load_annotations\' should return a list of dictionaries that contain \'labels\' and \'bboxes\'.'
-            assert('bboxes' in annotations), '\'load_annotations\' should return a list of dictionaries that contain \'labels\' and \'bboxes\'.'
+            assert('labels' in annotations), '\'load_annotations\' should return a list of dictionaries that contain \'labels\', \'depths\', and \'bboxes\'.'
+            assert('bboxes' in annotations), '\'load_annotations\' should return a list of dictionaries that contain \'labels\', \'depths\', and \'bboxes\'.'
+            #ADDENDUM DEPTH
+            assert('depths' in annotations), '\'load_annotations\' should return a list of dictionaries that contain \'labels\', \'depths\', and \'bboxes\'.'
 
         return annotations_group
 

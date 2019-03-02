@@ -595,7 +595,8 @@ def main(args=None):
         training_model.compile(
             loss={
                 'regression'    : losses.smooth_l1(),
-                'classification': losses.focal()
+                'classification': losses.focal(),
+                'depths'        : keras.losses.mean_absolute_error
             },
             optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
         )

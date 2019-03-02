@@ -68,33 +68,37 @@ def _read_annotations(csv_reader, classes):
         line += 1
 
         try:
-            img_file, x1, y1, x2, y2, class_name = row[:6]
+            img_file, x1, y1, x2, y2, z1, z2, class_name= row[:8]
         except ValueError:
-            raise_from(ValueError('line {}: format should be \'img_file,x1,y1,x2,y2,class_name\' or \'img_file,,,,,\''.format(line)), None)
+            raise_from(ValueError('line {}: format should be \'img_file,x1,y1,x2,y2,z1,z2,class_name\' or \'img_file,,,,,\''.format(line)), None)
 
         if img_file not in result:
             result[img_file] = []
 
         # If a row contains only an image path, it's an image without annotations.
-        if (x1, y1, x2, y2, class_name) == ('', '', '', '', ''):
+        if (x1, y1, x2, y2, z1, z2, class_name) == ('', '', '', '', '', '', ''):
             continue
 
         x1 = _parse(x1, int, 'line {}: malformed x1: {{}}'.format(line))
         y1 = _parse(y1, int, 'line {}: malformed y1: {{}}'.format(line))
         x2 = _parse(x2, int, 'line {}: malformed x2: {{}}'.format(line))
         y2 = _parse(y2, int, 'line {}: malformed y2: {{}}'.format(line))
+        z1 = _parse(z1, int, 'line {}: malformed z2: {{}}'.format(line))
+        z2 = _parse(z2, int, 'line {}: malformed z2: {{}}'.format(line))
 
         # Check that the bounding box is valid.
         if x2 <= x1:
             raise ValueError('line {}: x2 ({}) must be higher than x1 ({})'.format(line, x2, x1))
         if y2 <= y1:
             raise ValueError('line {}: y2 ({}) must be higher than y1 ({})'.format(line, y2, y1))
+        if z2 <= z1:
+            raise ValueError('line {}: z2 ({}) must be higher than z1 ({})'.format(line, z2, z1))
 
         # check if the current class name is correctly present
         if class_name not in classes:
             raise ValueError('line {}: unknown class name: \'{}\' (classes: {})'.format(line, class_name, classes))
 
-        result[img_file].append({'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'class': class_name})
+        result[img_file].append({'x1': x1, 'x2': x2, 'y1': y1, 'y2': y2, 'z1': z1, 'z2': z2,'class': class_name})
     return result
 
 
@@ -149,7 +153,7 @@ class CSVGenerator(Generator):
         for key, value in self.classes.items():
             self.labels[value] = key
 
-        # csv with img_path, x1, y1, x2, y2, class_name
+        # csv with img_path, x1, y1, x2, y2, z1, z2, class_name
         try:
             with _open_for_csv(csv_data_file) as file:
                 self.image_data = _read_annotations(csv.reader(file, delimiter=','), self.classes)
@@ -210,7 +214,8 @@ class CSVGenerator(Generator):
         """ Load annotations for an image_index.
         """
         path        = self.image_names[image_index]
-        annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4))}
+        #ADDENDUM DEPTH
+        annotations = {'labels': np.empty((0,)), 'bboxes': np.empty((0, 4)), 'depths': np.empty((0, 2))}
 
         for idx, annot in enumerate(self.image_data[path]):
             annotations['labels'] = np.concatenate((annotations['labels'], [self.name_to_label(annot['class'])]))
@@ -220,5 +225,9 @@ class CSVGenerator(Generator):
                 float(annot['x2']),
                 float(annot['y2']),
             ]]))
-
+        #ADDENDUM DEPTH
+            annotations['depths'] = np.concatenate((annotations['depths'], [[
+                float(annot['z1']),
+                float(annot['z2']),
+            ]]))
         return annotations
