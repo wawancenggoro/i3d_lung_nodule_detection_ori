@@ -110,11 +110,16 @@ def anchor_targets_bbox(
 
             # compute target class labels
             labels_batch[index, positive_indices, annotations['labels'][argmax_overlaps_inds[positive_indices]].astype(int)] = 1
+            print('debug labels_batch')
             import IPython; IPython.embed()
+            
             depths_batch[index] = (annotations['depths']-1.)/31.
+            print('debug depths_batch')
+            import IPython; IPython.embed()
 
             regression_batch[index, :, :-1] = bbox_transform(anchors, annotations['bboxes'][argmax_overlaps_inds, :])
-
+            print('debug regression_batch')
+            import IPython; IPython.embed()
         # ignore annotations outside of image
         if image.shape:
             anchors_centers = np.vstack([(anchors[:, 0] + anchors[:, 2]) / 2, (anchors[:, 1] + anchors[:, 3]) / 2]).T
