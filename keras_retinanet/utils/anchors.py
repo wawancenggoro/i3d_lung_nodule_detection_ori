@@ -117,7 +117,7 @@ def anchor_targets_bbox(
             print('debug regression_batch')
             import IPython; IPython.embed()
 
-            depths_batch[index] = (annotations['depths'][argmax_overlaps_inds, :]-1.)/31.
+            depths_batch[index, :, :-1] = (annotations['depths'][argmax_overlaps_inds, :]-1.)/31.
             # print('debug depths_batch')
             # import IPython; IPython.embed()
 
