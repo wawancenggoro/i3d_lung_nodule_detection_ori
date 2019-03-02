@@ -110,12 +110,12 @@ def anchor_targets_bbox(
 
             # compute target class labels
             labels_batch[index, positive_indices, annotations['labels'][argmax_overlaps_inds[positive_indices]].astype(int)] = 1
-            print('debug labels_batch')
-            import IPython; IPython.embed()
+            # print('debug labels_batch')
+            # import IPython; IPython.embed()
             
             regression_batch[index, :, :-1] = bbox_transform(anchors, annotations['bboxes'][argmax_overlaps_inds, :])
-            print('debug regression_batch')
-            import IPython; IPython.embed()
+            # print('debug regression_batch')
+            # import IPython; IPython.embed()
 
             depths_batch[index, :, :-1] = (annotations['depths'][argmax_overlaps_inds, :]-1.)/31.
             # print('debug depths_batch')
