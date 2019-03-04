@@ -34,7 +34,7 @@ if __name__ == "__main__" and __package__ is None:
 # Change these to absolute imports if you copy this script outside the keras_retinanet package.
 from keras import backend as K
 from keras.layers import Input
-from keras import losses as lossesification
+# from keras import losses as lossesification
 
 
 from .. import layers  # noqa: F401
@@ -598,8 +598,8 @@ def main(args=None):
             loss={
                 'regression'    : losses.smooth_l1(),
                 'classification': losses.focal(),
-                'depthsification': lossesification.mean_squared_error
-                # 'depthsification': losses.focal()
+                # 'depthsification': lossesification.mean_squared_error
+                'depthsification': losses.mean_absolute_error()
             },
             optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
         )
