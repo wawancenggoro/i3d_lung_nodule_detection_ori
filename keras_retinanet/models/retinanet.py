@@ -25,16 +25,16 @@ def default_depths_model(
     num_anchors,
     pyramid_feature_size=256,
     prior_probability=0.01,
-    classification_feature_size=256,
+    depthsification_depths_size=256,
     name='depths_submodel'
 ):
     """ Creates the default regression submodel.
 
     Args
         num_classes                 : Number of classes to predict a score for at each feature level.
-        num_anchors                 : Number of anchors to predict classification scores for at each feature level.
+        num_anchors                 : Number of anchors to predict depthsification scores for at each feature level.
         pyramid_feature_size        : The number of filters to expect from the feature pyramid levels.
-        classification_feature_size : The number of filters to use in the layers in the classification submodel.
+        depthsification_feature_size : The number of filters to use in the layers in the depthsification submodel.
         name                        : The name of the submodel.
 
     Returns
@@ -53,7 +53,7 @@ def default_depths_model(
     outputs = inputs
     for i in range(4):
         outputs = keras.layers.Conv3D(
-            filters=classification_feature_size,
+            filters=depthsification_feature_size,
             activation='relu',
             name='pyramid_depths_{}'.format(i),
             kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01, seed=None),
@@ -77,7 +77,6 @@ def default_depths_model(
 
 
     print('Load retinanet.py default_depths_model.....................')
-    # print('Debug Model default_classification_model ')
     # import IPython;IPython.embed()
 
     return keras.models.Model(inputs=inputs, outputs=outputs, name=name)
@@ -260,7 +259,7 @@ def default_submodels(num_classes, num_anchors):
     return [
         ('regression', default_regression_model(4, num_anchors)),
         # ('classification', default_classification_model(num_classes, num_anchors)),
-        ('classification', default_classification_model(num_classes, num_anchors))
+        ('classification', default_depths_model(num_classes, num_anchors))
         # ('depthsification', default_depths_model(2, num_anchors))
     ]
 
@@ -424,7 +423,7 @@ def retinanet_bbox(
     # we expect the anchors, regression and classification values as first output
     regression     = model.outputs[0]
     classification = model.outputs[1]
-    # depthsification= model.outputs[2]
+    depthsification= model.outputs[2]
 
     # "other" can be any additional output from custom submodels, by default this will be []
     other = model.outputs[2:]
