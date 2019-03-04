@@ -116,7 +116,7 @@ def smooth_l1(sigma=3.0):
 
     return _smooth_l1
 
-def mean_absolute_error(sigma=3.0):
+def smooth_l1_depth(sigma=3.0):
     """ Create a smooth L1 loss functor.
 
     Args
@@ -127,7 +127,7 @@ def mean_absolute_error(sigma=3.0):
     """
     sigma_squared = sigma ** 2
 
-    def _mean_absolute_error(y_true, y_pred):
+    def _smooth_l1_depth(y_true, y_pred):
         """ Compute the smooth L1 loss of y_pred w.r.t. y_true.
 
         Args
@@ -176,4 +176,4 @@ def mean_absolute_error(sigma=3.0):
         normalizer = keras.backend.cast(normalizer, dtype=keras.backend.floatx())
         return keras.backend.sum(regression_loss) / normalizer
 
-    return _mean_absolute_error
+    return _smooth_l1_depth
