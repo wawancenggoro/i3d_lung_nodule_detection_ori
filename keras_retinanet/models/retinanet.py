@@ -423,7 +423,7 @@ def retinanet_bbox(
     # we expect the anchors, regression and classification values as first output
     regression     = model.outputs[0]
     classification = model.outputs[1]
-    depthsification= model.outputs[2]
+    # depthsification= model.outputs[2]
 
     # "other" can be any additional output from custom submodels, by default this will be []
     other = model.outputs[2:]
