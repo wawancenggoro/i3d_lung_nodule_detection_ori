@@ -23,7 +23,6 @@ import warnings
 import numpy as np
 import keras
 import keras.preprocessing.image
-from keras import lossesification
 import tensorflow as tf
 
 # Allow relative imports when being executed as script.
@@ -35,6 +34,8 @@ if __name__ == "__main__" and __package__ is None:
 # Change these to absolute imports if you copy this script outside the keras_retinanet package.
 from keras import backend as K
 from keras.layers import Input
+from keras import losses as lossesification
+
 
 from .. import layers  # noqa: F401
 from .. import losses
