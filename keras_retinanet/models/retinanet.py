@@ -25,7 +25,7 @@ def default_depths_model(
     num_anchors,
     pyramid_feature_size=256,
     prior_probability=0.01,
-    depthsification_depths_size=256,
+    depthsification_feature_size=256,
     name='depths_submodel'
 ):
     """ Creates the default regression submodel.
