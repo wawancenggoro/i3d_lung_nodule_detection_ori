@@ -21,6 +21,7 @@ from .. import backend
 def filter_detections(
     boxes,
     classification,
+    depthsification,
     other                 = [],
     class_specific_filter = True,
     nms                   = True,
