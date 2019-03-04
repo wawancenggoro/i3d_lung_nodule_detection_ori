@@ -599,7 +599,7 @@ def main(args=None):
                 'regression'    : losses.smooth_l1(),
                 'classification': losses.focal(),
                 # 'depthsification': lossesification.mean_squared_error
-                'depthsification': losses.mean_absolute_error()
+                'depthsification': losses.smooth_l1_depth()
             },
             optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
         )
