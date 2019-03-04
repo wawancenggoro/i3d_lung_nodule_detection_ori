@@ -147,30 +147,29 @@ def mean_absolute_error(sigma=3.0):
         regression        = backend.gather_nd(regression, indices)
         regression_target = backend.gather_nd(regression_target, indices)
 
-        
-
-        # compute mean absolute error
-        # f(x) = |x|             if |x|<1/sigma/sigma --> mean sqrt error
-        #        |x|             otherwise
-
         regression_diff = regression - regression_target
         regression_diff = keras.backend.abs(regression_diff)
-        regression_loss = backend.where(
-            keras.backend.less(regression_diff, 1.0 / sigma_squared),
-            regression_diff,
-            regression_diff
-        )
+
+        # # compute mean absolute error
+        # # f(x) = |x|             if |x|<1/sigma/sigma --> mean sqrt error
+        # #        |x|             otherwise
+
+        # regression_loss = backend.where(
+        #     keras.backend.less(regression_diff, 1.0 / sigma_squared),
+        #     regression_diff,
+        #     regression_diff
+        # )
         
 
         # compute smooth L1 loss
         # f(x) = 0.5 * (sigma * x)^2          if |x| < 1 / sigma / sigma
         #        |x| - 0.5 / sigma / sigma    otherwise
 
-        # regression_loss = backend.where(
-        #     keras.backend.less(regression_diff, 1.0 / sigma_squared),
-        #     0.5 * sigma_squared * keras.backend.pow(regression_diff, 2),
-        #     regression_diff - 0.5 / sigma_squared
-        # )
+        regression_loss = backend.where(
+            keras.backend.less(regression_diff, 1.0 / sigma_squared),
+            0.5 * sigma_squared * keras.backend.pow(regression_diff, 2),
+            regression_diff - 0.5 / sigma_squared
+        )
 
         # compute the normalizer: the number of positive anchors
         normalizer = keras.backend.maximum(1, keras.backend.shape(indices)[0])
