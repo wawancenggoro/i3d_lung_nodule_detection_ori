@@ -23,6 +23,7 @@ import warnings
 import numpy as np
 import keras
 import keras.preprocessing.image
+from keras import lossesification
 import tensorflow as tf
 
 # Allow relative imports when being executed as script.
@@ -596,7 +597,8 @@ def main(args=None):
             loss={
                 'regression'    : losses.smooth_l1(),
                 'classification': losses.focal(),
-                'depthsification': losses.focal()
+                'depthsification': lossesification.mean_squared_error
+                # 'depthsification': losses.focal()
             },
             optimizer=keras.optimizers.adam(lr=1e-5, clipnorm=0.001)
         )
