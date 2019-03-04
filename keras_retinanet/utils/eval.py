@@ -82,7 +82,8 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
             imagesss = imagesss.transpose((2, 0, 1))
 
         # run network
-        boxes, scores, labels = model.predict_on_batch(np.expand_dims(imagesss, axis=0))[:3]
+        # boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))[:3]
+        boxes, scores, labels = model.predict_on_batch(imagesss)
 
         # correct boxes for image scale
         boxes /= scale
