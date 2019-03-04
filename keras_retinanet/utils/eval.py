@@ -73,15 +73,16 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
     all_detections = [[None for i in range(generator.num_classes()) if generator.has_label(i)] for j in range(generator.size())]
 
     for i in progressbar.progressbar(range(generator.size()), prefix='Running network: '):
-        raw_image    = generator.load_image(i)
-        image        = generator.preprocess_image(raw_image.copy())
-        image, scale = generator.resize_image(image)
+        # raw_image    = generator.load_image(i)                       #equivalent generator --> load_image_group
+        # image        = generator.preprocess_image(raw_image.copy()) #generator --> preprocess_group_entry
+        # image, scale = generator.resize_image(image)                #generator --> preprocess_group_entry
+        imagesss = generator.__getitem__(1)[0]
 
         if keras.backend.image_data_format() == 'channels_first':
-            image = image.transpose((2, 0, 1))
+            imagesss = imagesss.transpose((2, 0, 1))
 
         # run network
-        boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))[:3]
+        boxes, scores, labels = model.predict_on_batch(np.expand_dims(imagesss, axis=0))[:3]
 
         # correct boxes for image scale
         boxes /= scale
@@ -139,7 +140,7 @@ def _get_annotations(generator):
             if not generator.has_label(label):
                 continue
 
-            all_annotations[i][label] = annotations['bboxes'][annotations['labels'] == label, :].copy()
+            all_annotations[i][label] = annotations['bboxes'][annotations['labels'] == label, :][annotations['depths'] == depth, :].copy()
 
     return all_annotations
 
