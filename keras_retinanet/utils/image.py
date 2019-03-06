@@ -17,19 +17,23 @@ limitations under the License.
 from __future__ import division
 import numpy as np
 import cv2
+import h5py
 from PIL import Image
 
 from .transform import change_transform_origin
 
 
 def read_image_bgr(path):
-    """ Read an image in BGR format.
+    """ Read an image in BGR format. --> Read HDF5 file
 
     Args
         path: Path to the image.
     """
-    image = np.asarray(Image.open(path).convert('RGB'))
-    return image[:, :, ::-1].copy()
+    hdf5_file=h5py.File(path, 'r')
+    image=hdf5_file.get('dataset')
+
+    # image = np.asarray(Image.open(path).convert('RGB'))
+    return image.copy()
 
 
 def preprocess_image(x, mode='caffe'):
