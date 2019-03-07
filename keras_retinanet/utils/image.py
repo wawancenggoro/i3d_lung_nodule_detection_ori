@@ -30,9 +30,11 @@ def read_image_bgr(path):
         path: Path to the image.
     """
     hdf5_file=h5py.File(path, 'r')
-    image=hdf5_file.get('dataset')
+    dataset_hdf5=hdf5_file.get('dataset')
+    image=np.array(dataset_hdf5)
 
     # image = np.asarray(Image.open(path).convert('RGB'))
+    # return dataset
     return image.copy()
 
 
@@ -72,13 +74,13 @@ def adjust_transform_for_image(transform, image, relative_translation):
     The translation of the matrix will be scaled with the size of the image.
     The linear part of the transformation will adjusted so that the origin of the transformation will be at the center of the image.
     """
-    height, width, channels = image.shape
+    depth, height, width, channels = image.shape
 
     result = transform
 
     # Scale the translation with the image size if specified.
     if relative_translation:
-        result[0:2, 2] *= [width, height]
+        result[1:3, 2] *= [width, height]
 
     # Move the origin of transformation.
     result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
