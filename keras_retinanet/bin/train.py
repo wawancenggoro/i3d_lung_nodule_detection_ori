@@ -518,6 +518,8 @@ def main(args=None):
         # import IPython; IPython.embed()
         # make prediction
     rgb_sample = train_generator.__getitem__(1)[0]
+    print('Image inputs to I3D models: ' + str(rgb_sample.shape))
+    # import IPython;IPython.embed()
     rgb_logits = rgb_model.predict(rgb_sample)
     # import IPython; IPython.embed()
     

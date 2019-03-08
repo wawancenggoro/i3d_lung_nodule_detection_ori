@@ -157,13 +157,22 @@ class Generator(keras.utils.Sequence):
         # test all annotations
         for index, (image, annotations) in enumerate(zip(image_group, annotations_group)):
             # test x2 < x1 | y2 < y1 | x1 < 0 | y1 < 0 | x2 <= 0 | y2 <= 0 | x2 >= image.shape[1] | y2 >= image.shape[0]
+            # invalid_indices = np.where(
+            #     (annotations['bboxes'][:, 2] <= annotations['bboxes'][:, 0]) |
+            #     (annotations['bboxes'][:, 3] <= annotations['bboxes'][:, 1]) |
+            #     (annotations['bboxes'][:, 0] < 0) |
+            #     (annotations['bboxes'][:, 1] < 0) |
+            #     (annotations['bboxes'][:, 2] > image.shape[1]) |
+            #     (annotations['bboxes'][:, 3] > image.shape[0])
+            # )[0]
+
             invalid_indices = np.where(
                 (annotations['bboxes'][:, 2] <= annotations['bboxes'][:, 0]) |
                 (annotations['bboxes'][:, 3] <= annotations['bboxes'][:, 1]) |
                 (annotations['bboxes'][:, 0] < 0) |
                 (annotations['bboxes'][:, 1] < 0) |
-                (annotations['bboxes'][:, 2] > image.shape[1]) |
-                (annotations['bboxes'][:, 3] > image.shape[0])
+                (annotations['bboxes'][:, 2] > image.shape[2]) |
+                (annotations['bboxes'][:, 3] > image.shape[1])
             )[0]
 
             # delete invalid indices
@@ -191,14 +200,16 @@ class Generator(keras.utils.Sequence):
             if transform is None:
                 transform = adjust_transform_for_image(next(self.transform_generator), image, self.transform_parameters.relative_translation)
 
+            # import IPython;IPython.embed()
+
             # apply transformation to image
             image = apply_transform(transform, image, self.transform_parameters)
+            # import IPython;IPython.embed()
 
             # Transform the bounding boxes in the annotations.
             annotations['bboxes'] = annotations['bboxes'].copy()
             for index in range(annotations['bboxes'].shape[0]):
                 annotations['bboxes'][index, :] = transform_aabb(transform, annotations['bboxes'][index, :])
-
         return image, annotations
 
     def random_transform_group(self, image_group, annotations_group):
@@ -210,7 +221,7 @@ class Generator(keras.utils.Sequence):
         for index in range(len(image_group)):
             # transform a single group entry
             image_group[index], annotations_group[index] = self.random_transform_group_entry(image_group[index], annotations_group[index])
-
+        # import IPython;IPython.embed()        
         return image_group, annotations_group
 
     def resize_image(self, image):
@@ -243,7 +254,7 @@ class Generator(keras.utils.Sequence):
         for index in range(len(image_group)):
             # preprocess a single group entry
             image_group[index], annotations_group[index] = self.preprocess_group_entry(image_group[index], annotations_group[index])
-
+        # import IPython;IPython.embed()
         return image_group, annotations_group
 
     def group_images(self):
@@ -263,17 +274,54 @@ class Generator(keras.utils.Sequence):
         """ Compute inputs for the network using an image_group.
         """
         # get the max image shape
-        max_shape = tuple(max(image.shape[x] for image in image_group) for x in range(3))
+        # max_shape = tuple(max(image.shape[x] for image in image_group) for x in range(3))
+        # import IPython;IPython.embed()
+
+        # i=0
+        max_shape_list=[]
+        max_shape_array=[]
+        # for i in range (len(image_group[0])):
+        max_shape = tuple(max(image.shape[x] for image in image_group) for x in range(4))
+        # max_shape = tuple(max(image_group[0].shape[x] for image in image_group[0]) for x in range(3))
+        # max_shape_conv = list(max_shape)
+        # max_shape_list.append(max_shape)
+        # i+1
+        # max_shape_conclusion = list(max(max_shape_list,key=lambda item:item[1]))
+        
+        # num_max_shape_array=len(max_shape_list)
+        # max_shape_array=max_shape_conclusion
+        # max_shape_array.insert(0, num_max_shape_array)
+        # max_shape_array=tuple(max_shape_array)
+        # max_shape_array= tuple(num_max_shape_array, max_shape_conclusion[0], max_shape_conclusion[1], max_shape_conclusion[2])
+        # max_shape_array=np.stack((max_shape_list[0], max_shape_list[1], max_shape_list[2], max_shape_list[3], max_shape_list[4], max_shape_list[5], max_shape_list[6], max_shape_list[7], max_shape_list[8], max_shape_list[9],
+        #     max_shape_list[10], max_shape_list[11], max_shape_list[12], max_shape_list[13], max_shape_list[14], max_shape_list[15], max_shape_list[16], max_shape_list[17], max_shape_list[18], max_shape_list[19],
+        #     max_shape_list[20], max_shape_list[21], max_shape_list[22], max_shape_list[23], max_shape_list[24], max_shape_list[25], max_shape_list[26], max_shape_list[27], max_shape_list[28], max_shape_list[29],
+        #     max_shape_list[30], max_shape_list[31]), axis=0)
+        
+        # print('max_shape')
+        # import IPython;IPython.embed()
 
         # construct an image batch object
         image_batch = np.zeros((self.batch_size,) + max_shape, dtype=keras.backend.floatx())
+        
+        # print('construct an image batch object')
+        # import IPython;IPython.embed()
 
         # copy all images to the upper left part of the image batch object
+        # image_batch[image_index, :image.shape[0], :image.shape[1], :image.shape[2]] = image
         for image_index, image in enumerate(image_group):
-            image_batch[image_index, :image.shape[0], :image.shape[1], :image.shape[2]] = image
+            # import IPython;IPython.embed()
+            # for i in range (len(image)):
+            image_batch[image_index, :image.shape[0], :image.shape[1], :image.shape[2], :image.shape[3]] = image
+
+        # print('copy all image')
+        # import IPython;IPython.embed()
 
         if keras.backend.image_data_format() == 'channels_first':
-            image_batch = image_batch.transpose((0, 3, 1, 2))
+            image_batch = image_batch.transpose((0, 4, 1, 2, 3))
+
+        
+        # import IPython;IPython.embed()
 
         return image_batch
 
@@ -287,7 +335,10 @@ class Generator(keras.utils.Sequence):
         """ Compute target outputs for the network using images and their annotations.
         """
         # get the max image shape
-        max_shape = tuple(max(image.shape[x] for image in image_group) for x in range(3))
+        
+        max_shape = tuple(max(image.shape[x] for image in image_group[0]) for x in range(3))
+        # print('debug compute_targets_max_shape')
+        # import IPython;IPython.embed()
         anchors   = self.generate_anchors(max_shape)
 
         batches = self.compute_anchor_targets(
@@ -304,20 +355,27 @@ class Generator(keras.utils.Sequence):
         """
         # load images and annotations
         image_group       = self.load_image_group(group)
-
         annotations_group = self.load_annotations_group(group)
+        # print('load images & annotations')
+        # import IPython;IPython.embed()
 
         # check validity of annotations
         image_group, annotations_group = self.filter_annotations(image_group, annotations_group, group)
 
         # randomly transform data
         image_group, annotations_group = self.random_transform_group(image_group, annotations_group)
+        # print('randomly transform data')
+        # import IPython;IPython.embed()
 
         # perform preprocessing steps
         image_group, annotations_group = self.preprocess_group(image_group, annotations_group)
+        # print('perform preprocessing steps')
+        # import IPython;IPython.embed()
 
         # compute network inputs
         inputs = self.compute_inputs(image_group)
+        # print('compute network inputs')
+        # import IPython;IPython.embed()
 
         # compute network targets
         targets = self.compute_targets(image_group, annotations_group)

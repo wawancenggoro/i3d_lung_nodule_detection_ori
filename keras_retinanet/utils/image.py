@@ -53,19 +53,47 @@ def preprocess_image(x, mode='caffe'):
     """
     # mostly identical to "https://github.com/keras-team/keras-applications/blob/master/keras_applications/imagenet_utils.py"
     # except for converting RGB -> BGR since we assume BGR already
+    i=0
+    x_list=[]
+    x_list_temp=[]
+    x_array=[]
+
+    for i in range (len(x)):
+        x_list_temp.append(x[i])
+    
+
+    i=0
+    for i in range (len(x_list_temp)):
+        x_list_temp[i] = x_list_temp[i].astype(np.float32)  
 
     # covert always to float32 to keep compatibility with opencv
-    x = x.astype(np.float32)
+    # x = x.astype(np.float32)
 
-    if mode == 'tf':
-        x /= 127.5
-        x -= 1.
-    elif mode == 'caffe':
-        x[..., 0] -= 103.939
-        x[..., 1] -= 116.779
-        x[..., 2] -= 123.68
 
-    return x
+        if mode == 'tf':
+            x_list_temp[i] /= 127.5
+            x_list_temp[i] -= 1.
+        elif mode == 'caffe':
+            x_list_temp[i][..., 0] -= 103.939
+            x_list_temp[i][..., 1] -= 116.779
+            x_list_temp[i][..., 2] -= 123.68
+        # if mode == 'tf':
+        #     x /= 127.5
+        #     x -= 1.
+        # elif mode == 'caffe':
+        #     x[..., 0] -= 103.939
+        #     x[..., 1] -= 116.779
+        #     x[..., 2] -= 123.68
+        x_list.append(x_list_temp[i])
+
+    x_array=np.stack((x_list[0], x_list[1], x_list[2], x_list[3], x_list[4], 
+        x_list[5], x_list[6], x_list[7], x_list[8], x_list[9],
+        x_list[10], x_list[11], x_list[12], x_list[13], x_list[14], 
+        x_list[15], x_list[16], x_list[17], x_list[18], x_list[19],
+        x_list[20], x_list[21], x_list[22], x_list[23], x_list[24], 
+        x_list[25], x_list[26], x_list[27], x_list[28], x_list[29],
+        x_list[30], x_list[31]), axis=0)
+    return x_array
 
 
 def adjust_transform_for_image(transform, image, relative_translation):
@@ -74,18 +102,35 @@ def adjust_transform_for_image(transform, image, relative_translation):
     The translation of the matrix will be scaled with the size of the image.
     The linear part of the transformation will adjusted so that the origin of the transformation will be at the center of the image.
     """
-    depth, height, width, channels = image.shape
+    i=0
+    result_list=[]
+    result_array=[]
+    # import IPython; IPython.embed()
 
-    result = transform
+    for i in range (len(image)):
+        height, width, channels = image[i].shape
+
+        result = transform
+        if relative_translation:
+            result[0:2, 2] *= [width, height]
 
     # Scale the translation with the image size if specified.
-    if relative_translation:
-        result[1:3, 2] *= [width, height]
-
+        
     # Move the origin of transformation.
-    result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
-
-    return result
+        result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
+        result_list.append(result)
+    
+    # import IPython; IPython.embed()
+    
+    result_array=np.stack((result_list[0], result_list[1], result_list[2], result_list[3], result_list[4], 
+        result_list[5], result_list[6], result_list[7], result_list[8], result_list[9],
+        result_list[10], result_list[11], result_list[12], result_list[13], result_list[14], 
+        result_list[15], result_list[16], result_list[17], result_list[18], result_list[19],
+        result_list[20], result_list[21], result_list[22], result_list[23], result_list[24], 
+        result_list[25], result_list[26], result_list[27], result_list[28], result_list[29],
+        result_list[30], result_list[31]), axis=0)
+    # import IPython; IPython.embed()
+    return result_array
 
 
 class TransformParameters:
@@ -147,15 +192,36 @@ def apply_transform(matrix, image, params):
       image:  The image to transform.
       params: The transform parameters (see TransformParameters)
     """
-    output = cv2.warpAffine(
-        image,
-        matrix[:2, :],
-        dsize       = (image.shape[1], image.shape[0]),
-        flags       = params.cvInterpolation(),
-        borderMode  = params.cvBorderMode(),
-        borderValue = params.cval,
-    )
-    return output
+
+    i=0
+    output_list=[]
+    output_array=[]
+    
+    # print('apply_transform debug result....')
+    # import IPython;IPython.embed()
+
+    for i in range(len(image)):
+        output = cv2.warpAffine(
+            image[i],
+            matrix[i][:2, :],
+            dsize       = (image[i].shape[1], image[i].shape[0]),
+            flags       = params.cvInterpolation(),
+            borderMode  = params.cvBorderMode(),
+            borderValue = params.cval,
+        )
+        output_list.append(output)
+        i=i+1
+    output_array=np.stack((output_list[0], output_list[1], output_list[2], output_list[3], output_list[4], 
+        output_list[5], output_list[6], output_list[7], output_list[8], output_list[9],
+        output_list[10], output_list[11], output_list[12], output_list[13], output_list[14], 
+        output_list[15], output_list[16], output_list[17], output_list[18], output_list[19],
+        output_list[20], output_list[21], output_list[22], output_list[23], output_list[24], 
+        output_list[25], output_list[26], output_list[27], output_list[28], output_list[29],
+        output_list[30], output_list[31]), axis=0)
+    # print('apply_transform debug result....')
+    # import IPython;IPython.embed()
+
+    return output_array
 
 
 def compute_resize_scale(image_shape, min_side=800, max_side=1333):
@@ -195,9 +261,20 @@ def resize_image(img, min_side=800, max_side=1333):
         A resized image.
     """
     # compute scale to resize the image
-    scale = compute_resize_scale(img.shape, min_side=min_side, max_side=max_side)
+    scale = compute_resize_scale(img[0].shape, min_side=min_side, max_side=max_side)
 
-    # resize the image with the computed scale
-    img = cv2.resize(img, None, fx=scale, fy=scale)
+    i=0
+    img_list=[]
+    img_array=[]
 
-    return img, scale
+    for i in range(len(img)):
+        img[i] = cv2.resize(img[i], None, fx=scale, fy=scale)    
+        img_list.append(img[i])
+    # # resize the image with the computed scale
+    # img = cv2.resize(img, None, fx=scale, fy=scale)
+        i+1
+    img_array=np.stack((img_list[0], img_list[1], img_list[2], img_list[3], img_list[4], img_list[5], img_list[6], img_list[7], img_list[8], img_list[9],
+        img_list[10], img_list[11], img_list[12], img_list[13], img_list[14], img_list[15], img_list[16], img_list[17], img_list[18], img_list[19],
+        img_list[20], img_list[21], img_list[22], img_list[23], img_list[24], img_list[25], img_list[26], img_list[27], img_list[28], img_list[29],
+        img_list[30], img_list[31]), axis=0)
+    return img_array, scale
