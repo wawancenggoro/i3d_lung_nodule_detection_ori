@@ -102,34 +102,49 @@ def adjust_transform_for_image(transform, image, relative_translation):
     The translation of the matrix will be scaled with the size of the image.
     The linear part of the transformation will adjusted so that the origin of the transformation will be at the center of the image.
     """
-    i=0
-    result_list=[]
-    result_array=[]
-    # import IPython; IPython.embed()
+    depth, height, width, channels = image.shape
 
-    for i in range (len(image)):
-        height, width, channels = image[i].shape
-
-        result = transform
-        if relative_translation:
-            result[0:2, 2] *= [width, height]
+    result = transform
 
     # Scale the translation with the image size if specified.
-        
+    if relative_translation:
+        result[0:2, 2] *= [width, height]
+
     # Move the origin of transformation.
-        result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
-        result_list.append(result)
+    result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
+    # import IPython;IPython.embed
+    result_array=np.stack((result, result, result, result, result, result, result, result,
+        result, result, result, result, result, result, result, result,
+        result, result, result, result, result, result, result, result,
+        result, result, result, result, result, result, result, result), axis=0)
+    # i=0
+    # result_list=[]
+    # result_array=[]
+    # # import IPython; IPython.embed()
+
+    # for i in range (len(image)):
+    #     depth, height, width, channels = image.shape
+
+    #     result = transform
+    #     if relative_translation:
+    #         result[0:2, 2] *= [width, height]
+
+    # # Scale the translation with the image size if specified.
+        
+    # # Move the origin of transformation.
+    #     result = change_transform_origin(transform, (0.5 * width, 0.5 * height))
+    #     result_list.append(result)
     
-    # import IPython; IPython.embed()
+    # # import IPython; IPython.embed()
     
-    result_array=np.stack((result_list[0], result_list[1], result_list[2], result_list[3], result_list[4], 
-        result_list[5], result_list[6], result_list[7], result_list[8], result_list[9],
-        result_list[10], result_list[11], result_list[12], result_list[13], result_list[14], 
-        result_list[15], result_list[16], result_list[17], result_list[18], result_list[19],
-        result_list[20], result_list[21], result_list[22], result_list[23], result_list[24], 
-        result_list[25], result_list[26], result_list[27], result_list[28], result_list[29],
-        result_list[30], result_list[31]), axis=0)
-    # import IPython; IPython.embed()
+    # result_array=np.stack((result_list[0], result_list[1], result_list[2], result_list[3], result_list[4], 
+    #     result_list[5], result_list[6], result_list[7], result_list[8], result_list[9],
+    #     result_list[10], result_list[11], result_list[12], result_list[13], result_list[14], 
+    #     result_list[15], result_list[16], result_list[17], result_list[18], result_list[19],
+    #     result_list[20], result_list[21], result_list[22], result_list[23], result_list[24], 
+    #     result_list[25], result_list[26], result_list[27], result_list[28], result_list[29],
+    #     result_list[30], result_list[31]), axis=0)
+    import IPython; IPython.embed()
     return result, result_array
 
 
