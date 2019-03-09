@@ -216,8 +216,7 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
         min_lr     = 0
     ))
 
-    callbacks.append(keras.callbacks.CSVLogger(
-        Callback/training_log.csv, separator=',', append=True))
+    callbacks.append(keras.callbacks.CSVLogger('losses_training_log.csv', separator=',', append=True))
     #Debug: callbacks[3]
 
     return callbacks
