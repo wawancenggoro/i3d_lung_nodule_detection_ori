@@ -80,10 +80,10 @@ def _get_detections(generator, model, score_threshold=0.05, max_detections=100, 
 
         if keras.backend.image_data_format() == 'channels_first':
             # images = imagesss.transpose((2, 0, 1))
-            images = imagesss.transpose((3, 0, 1, 2))
+            images = images.transpose((3, 0, 1, 2))
 
         # run network
-        boxes, scores, labels = model.predict_on_batch(np.expand_dims(image, axis=0))[:3]
+        boxes, scores, labels = model.predict_on_batch(np.expand_dims(images, axis=0))[:3]
         # boxes, scores, labels = model.predict_on_batch(images)
 
         # correct boxes for image scale
