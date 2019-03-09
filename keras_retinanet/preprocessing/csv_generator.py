@@ -93,7 +93,10 @@ def _read_annotations(csv_reader, classes):
             raise ValueError('line {}: y2 ({}) must be higher than y1 ({})'.format(line, y2, y1))
         # if z2 <= z1:
         #     raise ValueError('line {}: z2 ({}) must be higher than z1 ({})'.format(line, z2, z1))
-
+        if z1<0:
+            z1=0
+        if z2>32:
+            z2=32
         # check if the current class name is correctly present
         if class_name not in classes:
             raise ValueError('line {}: unknown class name: \'{}\' (classes: {})'.format(line, class_name, classes))
