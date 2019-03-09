@@ -177,6 +177,8 @@ def evaluate(
     # pickle.dump(all_detections, open('all_detections.pkl', 'wb'))
     # pickle.dump(all_annotations, open('all_annotations.pkl', 'wb'))
 
+    
+
     # process detections and annotations
     for label in range(generator.num_classes()):
         if not generator.has_label(label):

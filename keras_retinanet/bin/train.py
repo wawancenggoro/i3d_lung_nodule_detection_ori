@@ -56,7 +56,6 @@ from ..models.retinanet import retinanet
 from ..models.retinanet import retinanet_bbox
 
 
-
 def makedirs(path):
     # Intended behavior: try to create the directory,
     # pass if the directory exists already, fails otherwise.
@@ -182,7 +181,12 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
         else:
             evaluation = Evaluate(validation_generator, tensorboard=tensorboard_callback, weighted_average=args.weighted_average)
         evaluation = RedirectModel(evaluation, prediction_model)
+        
+        mAP_csv=open('mAP_csv.csv', mode='a')
+        mAP_csv.write('mAP: ,' +str(evaluation))
+
         callbacks.append(evaluation)
+
 
     # save the model
     if args.snapshots:
@@ -211,6 +215,10 @@ def create_callbacks(model, training_model, prediction_model, validation_generat
         cooldown   = 0,
         min_lr     = 0
     ))
+
+    callbacks.append(keras.callbacks.CSVLogger(
+        Callback/training_log.csv, separator=',', append=True))
+    #Debug: callbacks[3]
 
     return callbacks
 
@@ -623,6 +631,9 @@ def main(args=None):
     else:
         use_multiprocessing = False
 
+
+    callbacks.CSVLogger(filename, separator=',', append=True)
+
     # start training
     training_model.fit_generator(
         generator=train_generator,
@@ -632,7 +643,8 @@ def main(args=None):
         callbacks=callbacks,
         workers=args.workers,
         use_multiprocessing=use_multiprocessing,
-        max_queue_size=args.max_queue_size
+        max_queue_size=args.max_queue_size,
+        callbacks
     )
     
 if __name__ == '__main__':
