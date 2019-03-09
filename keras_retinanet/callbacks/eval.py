@@ -95,3 +95,5 @@ class Evaluate(keras.callbacks.Callback):
 
         if self.verbose == 1:
             print('mAP: {:.4f}'.format(self.mean_ap))
+
+        mAP_csv.write('mAP: ,' +'{:.4f}'.format(self.mean_ap))
