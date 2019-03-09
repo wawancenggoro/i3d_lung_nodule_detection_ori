@@ -53,7 +53,6 @@ def transform_aabb(transform, aabb):
 
     return [min_corner[0], min_corner[1], max_corner[0], max_corner[1]]
 
-
 def _random_vector(min, max, prng=DEFAULT_PRNG):
     """ Construct a random vector between min and max.
     Args
