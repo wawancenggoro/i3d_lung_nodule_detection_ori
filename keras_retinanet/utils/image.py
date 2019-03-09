@@ -144,7 +144,7 @@ def adjust_transform_for_image(transform, image, relative_translation):
     #     result_list[20], result_list[21], result_list[22], result_list[23], result_list[24], 
     #     result_list[25], result_list[26], result_list[27], result_list[28], result_list[29],
     #     result_list[30], result_list[31]), axis=0)
-    import IPython; IPython.embed()
+    # import IPython; IPython.embed()
     return result, result_array
 
 

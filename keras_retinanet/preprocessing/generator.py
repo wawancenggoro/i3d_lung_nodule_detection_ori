@@ -207,9 +207,9 @@ class Generator(keras.utils.Sequence):
             # import IPython;IPython.embed()
 
             # Transform the bounding boxes in the annotations.
-            import IPython;IPython.embed()
+            # import IPython;IPython.embed()
             annotations['bboxes'] = annotations['bboxes'].copy()
-            import IPython;IPython.embed()
+            # import IPython;IPython.embed()
 
             for index in range(annotations['bboxes'].shape[0]):
                 annotations['bboxes'][index, :] = transform_aabb(transform[0], annotations['bboxes'][index, :])
