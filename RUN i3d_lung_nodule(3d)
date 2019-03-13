@@ -1,0 +1,48 @@
+
+BATCH SIZE 64
+keras_retinanet/bin/train.py --step 187 --epoch 2 csv ../i3d_hdf5_lung_data/lung_nodule_annotation.csv ../i3d_hdf5_lung_data/ClassID.csv
+
+
+BATCH SIZE 32
+keras_retinanet/bin/train.py --step 374 --epoch 5 csv ../i3d_hdf5_lung_data/lung_nodule_annotation.csv ../i3d_hdf5_lung_data/ClassID.csv
+
+BATCH SIZE 16
+keras_retinanet/bin/train.py --step 748 --epoch 5 csv ../i3d_hdf5_lung_data/lung_nodule_annotation.csv ../i3d_hdf5_lung_data/ClassID.csv
+
+
+MAU EVAL??? TAMBAHIN INI DI BELAKANG
+--val-annotations ../i3d_hdf5_lung_data/lung_nodule_annotation.csv
+
+TUGAS: PASTIIN 2D sampai jalan untuk eval baru ntar lanjut lagi
+
+
+keras_retinanet/bin/train.py --step 1 --epoch 5 csv ../i3d_hdf5_lung_data/lung_nodule_annotation_smallbatch.csv ../i3d_hdf5_lung_data/ClassID.csv --val-annotations ../i3d_hdf5_lung_data/lung_nodule_annotation.csv
+
+tmux
+tmux new -s lung
+tmux a -t lung
+ctrl+b --> d (minimize layer)
+ctrl+b --> [ (enable scrolling)
+
+
+CONTOH DEBUG FUNCTION: train_generator.__getitem__(1)[0].shape
+
+koreksi yang saya lakukan ada di untuk i3d-retinanet (3D):
+1. utils/image.py bagian preprocess_image --> saya sudah cross check untuk for loopnya
+2. pada preprocessing/generator.py pada baris 290, pada def compute_targets, saya merevisi max_shape yang akan dimasukkan ke generate_anchors 
+
+Sebelumnya dari "max_shape = tuple(max(image.shape[x] for image in image_group) *for x in range(3))* " saya ubah jadi *for x in range(4))* dengan max_shape yang diambil untuk generate_anchors adalah max_shape[1:4], 
+karena kalau diambil x in range 3 dan generate_anchors tidak diatur --> yang terambil (32,512,512) 
+padahal yang diambil untuk anchors seharusnya adalah (512,512,3) 
+
+
+dan setelah saya coba training hasil lossnya lebih rendah (classification, regression, depthsification --> regression & depthsification = 0)
+
+Epoch 1/1
+loss: 0.0011 - regression_loss: 0.0000e+00 - classification_loss: 0.0011 - depthsification_loss: 0.0000e+00
+
+Epoch 2/2
+loss: 6.0986e-08 - regression_loss: 0.0000e+00 - classification_loss: 6.0986e-08 - depthsification_loss: 0.0000e+00
+
+Epoch 3/3
+loss: 2.7947e-08 - regression_loss: 0.0000e+00 - classification_loss: 2.7947e-08 - depthsification_loss: 0.0000e+00
