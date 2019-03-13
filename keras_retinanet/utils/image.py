@@ -60,15 +60,12 @@ def preprocess_image(x, mode='caffe'):
 
     for i in range (len(x)):
         x_list_temp.append(x[i])
-    
+        i=i+1
 
     i=0
     for i in range (len(x_list_temp)):
+        # covert always to float32 to keep compatibility with opencv
         x_list_temp[i] = x_list_temp[i].astype(np.float32)  
-
-    # covert always to float32 to keep compatibility with opencv
-    # x = x.astype(np.float32)
-
 
         if mode == 'tf':
             x_list_temp[i] /= 127.5
@@ -77,14 +74,9 @@ def preprocess_image(x, mode='caffe'):
             x_list_temp[i][..., 0] -= 103.939
             x_list_temp[i][..., 1] -= 116.779
             x_list_temp[i][..., 2] -= 123.68
-        # if mode == 'tf':
-        #     x /= 127.5
-        #     x -= 1.
-        # elif mode == 'caffe':
-        #     x[..., 0] -= 103.939
-        #     x[..., 1] -= 116.779
-        #     x[..., 2] -= 123.68
+       
         x_list.append(x_list_temp[i])
+        i=i+1
 
     x_array=np.stack((x_list[0], x_list[1], x_list[2], x_list[3], x_list[4], 
         x_list[5], x_list[6], x_list[7], x_list[8], x_list[9],
