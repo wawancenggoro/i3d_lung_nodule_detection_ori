@@ -6,12 +6,10 @@ Deprecrated version of I3DR-Net Keras implementation using RetinaNet focal loss
 For more recent update (alpha version, dropped):
 
 ## Check out other repo:
-Alpha version (Keras Implementation)
 1. [I3DR-Net Original without weight, and original anchors](https://github.com/ivanwilliammd/I3D-RetinaNet_Keras_Alpha_ver_LargeObject)
 2. [I3DR-Net Upsampled with P2 pyramid](https://github.com/ivanwilliammd/I3D-RetinaNet_Keras_Alpha_ver_P2Pyramid)
 3. [I3DR-Net Original with smaller anchors](https://github.com/ivanwilliammd/I3D-RetinaNet_Keras_Alpha_ver_SmallObject)
 4. [JPG to HDF5 Converter](https://github.com/ivanwilliammd/BatchImagesToHDF5_Converter)
-5. [I3DR-Net-Transfer-Learning](https://github.com/ivanwilliammd/I3DR-Net-Transfer-Learning)
 
 ------------------------------------------------------------------------------
 Licensed under the Apache License, Version 2.0 (the "License");
